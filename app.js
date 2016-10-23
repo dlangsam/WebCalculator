@@ -72,6 +72,21 @@ class Calculator{
 	setOperand(number){
 		this.accumulator = number;
 	}
+	executeUnaryOperation(symbol){
+
+        switch(symbol){
+        	case "sqrt":
+        		this.accumulator = Math.sqrt(Number(this.accumulator));
+        		break;
+        	case "^2":
+        		this.accumulator = Number(this.accumulator) * Number(this.accumulator);
+        		break;
+        	default:
+        		break;
+
+        }
+
+	}
 	executePendingBinaryOperation(){
 		// console.log("Execute Pending");
 		 if(this.pending){
@@ -109,8 +124,12 @@ class Calculator{
 			case "/":
 			case "**":
 					this.executePendingBinaryOperation();
-                    this.pending = new Pending( String(this.accumulator), String(symbol));
+                    this.pending = new Pending( (this.accumulator),(symbol));
 					break;
+			case "sqrt":
+			case "^2":
+				 	this.executeUnaryOperation(symbol);
+				 	break; 
 			case "=":
 					this.executePendingBinaryOperation();
 					break;
