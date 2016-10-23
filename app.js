@@ -1,6 +1,24 @@
 $(document).on('ready', function(){
+
 	var userInMiddleOfTyping = false;
-	var calcBrain = new Calculator();  
+	var calcBrain = new Calculator();
+	var savedCalcsArray = [];
+	loadCalculations();
+	function loadCalculations(){
+		//window.localStorage.setItem("saved-calculations", "");
+		if (window.localStorage.getItem("saved-calculations")){
+    		var savedCalcs = window.localStorage.getItem("saved-calculations");
+    		console.log(savedCalcs);
+    		savedCalcsArray = savedCalcs.split(",");
+    		savedCalcsArray.forEach(function(calc){
+    			console.log(calc);
+    		});
+    		console.log(savedCalcsArray);
+  		}
+	}
+
+
+
 	$('.js-digit').on('click', function(){
 		var digit = $(this).text();
 		console.log(digit + " clicked");
@@ -25,9 +43,28 @@ $(document).on('ready', function(){
         }
         userInMiddleOfTyping = false;        
         calcBrain.performOperation(symbol);
+
         
         var result = calcBrain.result();
+        var desc = calcBrain.description;
          $('.js-display').val(result); 
+          $('.js-desc').val(desc); 
+
+
+        if(calcBrain.isCompleteCalculation()){
+        	console.log("Attempting to save data");
+        	if(savedCalcsArray.length  === 10){
+        		savedCalcsArray.shift();
+        	}
+        	savedCalcsArray.push(desc);
+        	var savedCalcs = "";
+        	savedCalcsArray.forEach(function(savedCalc){
+        		savedCalcs += "," + savedCalc;
+        	});
+        	savedCalcs = savedCalcs.substring(1);
+        	console.log(savedCalcsArray);
+			window.localStorage.setItem("saved-calculations", savedCalcs);
+        }
         
 	});
 
@@ -56,6 +93,8 @@ class Calculator{
 	constructor(){
 		var _accumulator = 0.0;
 		var _pending = null; 
+		var _afterEqual = false;
+		this._internalProgram = []; 
 	}
 	result(){
 		return this.accumulator; 
@@ -66,20 +105,38 @@ class Calculator{
 	get pending(){
 		return this._pending; 
 	}
+	set internalProgram(internalProgram){
+		this._internalProgram = internalProgram; 
+	}
+	get internalProgram(){
+		return this._internalProgram; 
+	}
+	pushToProgram(x){
+		this._internalProgram.push(x);
+	}
+	get description(){
+		var desc = "";
+		this.internalProgram.forEach(function(x){
+			desc += x;
+		});
+		return desc;
+	}
 	printPending(){
 		this.pending.print();
 	}
 	setOperand(number){
 		this.accumulator = number;
+		
+		this.pushToProgram(number);
 	}
 	executeUnaryOperation(symbol){
 
         switch(symbol){
         	case "sqrt":
-        		this.accumulator = Math.sqrt(Number(this.accumulator));
+        		this.accumulator = new Decimal(String(this.accumulator)).pow(".5");
         		break;
         	case "^2":
-        		this.accumulator = Number(this.accumulator) * Number(this.accumulator);
+        		this.accumulator = new Decimal(String(this.accumulator)).pow(2);
         		break;
         	default:
         		break;
@@ -88,10 +145,8 @@ class Calculator{
 
 	}
 	executePendingBinaryOperation(){
-		// console.log("Execute Pending");
 		 if(this.pending){
 		 	var symbol = this.pending.symbol; 
-		 	// console.log(symbol);
             switch(symbol){
             	case "+": 
             			this.accumulator = Number(this.pending.number) + Number(this.accumulator);
@@ -125,16 +180,30 @@ class Calculator{
 			case "**":
 					this.executePendingBinaryOperation();
                     this.pending = new Pending( (this.accumulator),(symbol));
+                    this.afterEqual = false;
+                    console.log(this.internalProgram);
+                    this.pushToProgram(symbol);
 					break;
 			case "sqrt":
 			case "^2":
 				 	this.executeUnaryOperation(symbol);
+				 	this.afterEqual = true;
+				 	this.pushToProgram(symbol);
 				 	break; 
-			case "=":
+			case "=":				
 					this.executePendingBinaryOperation();
+					this.afterEqual = true;
+
 					break;
 			default: console.log("other");
 		}
 	
+	}
+	isCompleteCalculation(){
+		var isComplete = this.afterEqual && this.pending === null;  
+		if(isComplete){
+			this.internalProgram = [];
+		}
+		return isComplete;
 	}
 }
