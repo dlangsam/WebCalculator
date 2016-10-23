@@ -106,7 +106,7 @@ class Calculator{
             			this.accumulator = Number(this.pending.number) / Number(this.accumulator);
             			break;
             	 case "**":
-            			this.accumulator = Number(this.pending.number) ** Number(this.accumulator);
+            			this.accumulator = Math.pow(Number(this.pending.number),Number(this.accumulator));
             			break;
             	default: 
             			console.log("here");
