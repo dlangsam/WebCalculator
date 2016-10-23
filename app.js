@@ -3,6 +3,7 @@ $(document).on('ready', function(){
 	var userInMiddleOfTyping = false;
 	var calcBrain = new Calculator();
 	var savedCalcsArray = [];
+	var prev = 0;
 	loadCalculations();
 	function loadCalculations(){
 		//window.localStorage.setItem("saved-calculations", "");
@@ -13,6 +14,7 @@ $(document).on('ready', function(){
     		savedCalcsArray.forEach(function(calc){
     			console.log(calc);
     		});
+    		prev = savedCalcsArray.length; 
     		console.log(savedCalcsArray);
   		}
 	}
@@ -63,13 +65,28 @@ $(document).on('ready', function(){
         	});
         	savedCalcs = savedCalcs.substring(1);
         	console.log(savedCalcsArray);
+        	prev = savedCalcsArray.length; 
 			window.localStorage.setItem("saved-calculations", savedCalcs);
         }
         
 	});
 
+	$('.js-previous').on('click', function(){
+		if(savedCalcsArray.length){
+			if(prev ===0 ){
+				prev = savedCalcsArray.length
+			}
+			prev = prev - 1;
+		 	$('.js-desc').val(savedCalcsArray[prev]); 
+		}else{
+			$('.js-desc').val("No past calculations available");
+		}
+	});
+
 
 }); 
+
+
 
 class Pending{
 	constructor(n, s){		
@@ -132,10 +149,10 @@ class Calculator{
 	executeUnaryOperation(symbol){
 
         switch(symbol){
-        	case "sqrt":
+        	case "√":
         		this.accumulator = new Decimal(String(this.accumulator)).pow(".5");
         		break;
-        	case "^2":
+        	case "x²":
         		this.accumulator = new Decimal(String(this.accumulator)).pow(2);
         		break;
         	default:
@@ -154,13 +171,13 @@ class Calculator{
             	case "-":
             			this.accumulator = Number(this.pending.number) - Number(this.accumulator);
             			break;
-            	case "*":
+            	case "×":
             			this.accumulator = Number(this.pending.number) * Number(this.accumulator);
             			break;
-            	case "/":
+            	case "÷":
             			this.accumulator = Number(this.pending.number) / Number(this.accumulator);
             			break;
-            	 case "**":
+            	 case "xⁿ":
             			this.accumulator = Math.pow(Number(this.pending.number),Number(this.accumulator));
             			break;
             	default: 
@@ -175,17 +192,17 @@ class Calculator{
 		switch(symbol){
 			case "+": 	
 			case "-":
-			case "*":
-			case "/":
-			case "**":
+			case "×":
+			case "÷":
+			case "xⁿ":
 					this.executePendingBinaryOperation();
                     this.pending = new Pending( (this.accumulator),(symbol));
                     this.afterEqual = false;
                     console.log(this.internalProgram);
                     this.pushToProgram(symbol);
 					break;
-			case "sqrt":
-			case "^2":
+			case "√":
+			case "x²":
 				 	this.executeUnaryOperation(symbol);
 				 	this.afterEqual = true;
 				 	this.pushToProgram(symbol);

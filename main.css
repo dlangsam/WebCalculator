@@ -21,6 +21,7 @@
 
 .btn:hover {
 	background-color: #4d62d4;
+	 color: white
 }
 
 .btn:active.btn:hover {
@@ -28,12 +29,14 @@
   box-shadow: 0 5px #666;
   transform: translateY(4px);
   outline: none;
+   color: white
  
 }
 
 .btn:focus{
  background-color: #035bd3;
  outline:none;
+  color: white
 }
 
 
