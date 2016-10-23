@@ -90,6 +90,9 @@ class Calculator{
             	case "/":
             			this.accumulator = Number(this.pending.number) / Number(this.accumulator);
             			break;
+            	 case "**":
+            			this.accumulator = Number(this.pending.number) ** Number(this.accumulator);
+            			break;
             	default: 
             			console.log("here");
             			break;
@@ -104,6 +107,7 @@ class Calculator{
 			case "-":
 			case "*":
 			case "/":
+			case "**":
 					this.executePendingBinaryOperation();
                     this.pending = new Pending( String(this.accumulator), String(symbol));
 					break;
