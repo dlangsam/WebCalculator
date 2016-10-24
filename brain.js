@@ -1,11 +1,13 @@
 class Calculator{
 	constructor(){
-		var _accumulator = 0.0;
+		var _accumulator = 0;
 		var _pending = null; 
 		var _afterEqual = false;
 		var _tempResult = null;
 		var _enteredDigit = false; 
 		this._internalProgram = []; 
+
+		this.clear();
 	}
 	result(){
 		return this.accumulator; 
@@ -52,27 +54,18 @@ class Calculator{
 		if(!this.tempResult && this.pending){
 			this.tempResult = new temporaryCalculation(0, []);
 		}
-		if(this.enteredDigit ){
+		if(this.enteredDigit && this.pending){
 			this.tempResult.pushToProgram(this.accumulator);
 		}
         switch(symbol){
         	case "√":
-        		//make sure you are not takinga sqrt of negative number (not handled by BigNumber)
-            	if(this.accumulator < 0){
-            		this.accumulator = NaN
-            	}else{
-        			this.accumulator = new BigNumber(this.accumulator).sqrt();
-        		}
+        		this.accumulator = new BigNumber(this.accumulator).sqrt();
         		break;
         	case "x²":
         		this.accumulator = new BigNumber(this.accumulator).pow(2);
         		break;
         	case "x⁻¹":
-        		if(this.accumulator === 0){
-            		this.accumulator = Infinity;
-            	}else{
-        			this.accumulator = new BigNumber(this.accumulator).pow(-1);
-        		}
+        		this.accumulator = new BigNumber(this.accumulator).pow(-1);
         		break;
         	case "∓":
         		this.accumulator = new BigNumber(this.accumulator).neg();
@@ -112,19 +105,11 @@ class Calculator{
             			this.accumulator = new BigNumber(this.pending.number).times(new BigNumber(this.accumulator));
             			break;
             	case "÷":
-            			//make sure you are not dividing by zero (not handled by BigNumber)
-            			if(this.accumulator === 0){
-            				this.accumulator = Infinity
-            			}else{
-            				this.accumulator = new BigNumber(this.pending.number).div(new BigNumber(this.accumulator));
-            			}
+            			this.accumulator = new BigNumber(this.pending.number).div(new BigNumber(this.accumulator));
             			break;
             	 case "xⁿ":
-            	 		if(this.pending.number === 0 && this.accumulator < 0){
-            				this.accumulator = Infinity
-            			}else{
-            				this.accumulator = new BigNumber(this.pending.number).pow( new BigNumber(this.accumulator));
-            			}
+            			this.accumulator = new BigNumber(this.pending.number).pow( new BigNumber(this.accumulator));		
+            			break;
             	default: 
             			break;
             }
@@ -178,8 +163,13 @@ class Calculator{
 		}
 	
 	}
-
-	//TODO fixme so +- is not a complete calculation
+	//check to see wheter a calculation is complete
+	//considered complete if there is no pending calculations left or the last
+	//button pressed was equal
+	//this means all unary calculations that are done outside of a pending calculation
+	//are considered complete
+	//if the calculation is complete, clear the internal program so it is ready for the
+	//next calculation
 	isCompleteCalculation(){
 		var isComplete = this.afterEqual || !this.pending;  
 		if(isComplete){
@@ -187,7 +177,7 @@ class Calculator{
 		}
 		return isComplete;
 	}
-
+	//read a string calculation and redo all the calculations
 	redoCalc(calculation){
 		var calcBrain = this; 
 		var inputNumber = ""; 

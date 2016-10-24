@@ -1,3 +1,5 @@
+//Class to keep track of the first operand and operation for binary operations
+
 class Pending{
 	constructor(n, s){		
 		this._number = n; 

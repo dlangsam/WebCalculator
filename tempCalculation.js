@@ -1,3 +1,5 @@
+//class to keep track of a unary operaton inside of a binary operation
+
 class temporaryCalculation{
 	constructor(){
 		var _tempResult = null;
