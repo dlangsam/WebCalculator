@@ -2,12 +2,15 @@
 
 $(document).on('ready', function(){
 
-	var digits = 10;
+	var digits = 10; //number of decimal digits to display in the result
 	var userInMiddleOfTyping = false;
 	var calcBrain = new Calculator();
-	var savedCalcsArray = [];
-	var prev = 0;
+	var savedCalcsArray = []; //array to store past 10 calculations
+	var prev = 0;//index to keep track of which previous calculation to store
 	loadCalculations();
+
+	//method to read in and store all the past calculations
+	//store in local storage so they are not lost on refresh;
 	function loadCalculations(){
 		if (window.localStorage.getItem("saved-calculations")){
     		var savedCalcs = window.localStorage.getItem("saved-calculations");		
@@ -21,6 +24,8 @@ $(document).on('ready', function(){
 	function setDisplayResult(){
 		var result = calcBrain.result();
 
+
+
         //Once I get the result I am rounding to 10 digits and then calling toFixed 
         // to truncating at the 10th digit. I then round again so that any extra zeros 
         // that may have been added by the toFixed method are removed.
@@ -32,7 +37,8 @@ $(document).on('ready', function(){
 
 
 
-
+	//Any time a digit is clicked update the display
+	//The userInMiddleOfTyping makes sure only one decimal can be added
 	$('.js-digit').on('click', function(){
 		prev = savedCalcsArray.length
 		var digit = $(this).text();
@@ -60,9 +66,7 @@ $(document).on('ready', function(){
             calcBrain.setOperand($('.js-display').val());
         }
         userInMiddleOfTyping = false;        
-        calcBrain.performOperation(symbol);
-
-        
+        calcBrain.performOperation(symbol); 
         
         var desc = calcBrain.description;
          $('.js-desc').val(desc); 
@@ -97,7 +101,10 @@ $(document).on('ready', function(){
         
         
 	});
-
+	//each time the previous button is clicked show a previous function
+	//prev starts at the length of the array each time a new calculation is saved
+	//every time the button is pressed the index decreases so that you can loop through
+	//all 10 calculations
 	$('.js-previous').on('click', function(){
 		if(savedCalcsArray.length){
 			if(prev ===0 ){
