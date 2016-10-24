@@ -1,27 +1,40 @@
+
+
 $(document).on('ready', function(){
 
+	var digits = 10;
 	var userInMiddleOfTyping = false;
 	var calcBrain = new Calculator();
 	var savedCalcsArray = [];
 	var prev = 0;
 	loadCalculations();
 	function loadCalculations(){
-		//window.localStorage.setItem("saved-calculations", "");
 		if (window.localStorage.getItem("saved-calculations")){
-    		var savedCalcs = window.localStorage.getItem("saved-calculations");
-    		console.log(savedCalcs);
+    		var savedCalcs = window.localStorage.getItem("saved-calculations");		
     		savedCalcsArray = savedCalcs.split(",");
     		savedCalcsArray.forEach(function(calc){
     			console.log(calc);
     		});
-    		prev = savedCalcsArray.length; 
-    		console.log(savedCalcsArray);
+    		prev = savedCalcsArray.length;   	
   		}
+	}
+	function setDisplayResult(){
+		var result = calcBrain.result();
+
+        //Once I get the result I am rounding to 10 digits and then calling toFixed 
+        // to truncating at the 10th digit. I then round again so that any extra zeros 
+        // that may have been added by the toFixed method are removed.
+        var resultDisplayed = new BigNumber(result).round(digits);
+        resultDisplayed = new BigNumber(resultDisplayed).toFixed(digits);
+        resultDisplayed = new BigNumber(resultDisplayed).round(digits);
+         $('.js-display').val(resultDisplayed); 
 	}
 
 
 
+
 	$('.js-digit').on('click', function(){
+		prev = savedCalcsArray.length
 		var digit = $(this).text();
 		console.log(digit + " clicked");
 		if(userInMiddleOfTyping){
@@ -37,7 +50,10 @@ $(document).on('ready', function(){
         }
         userInMiddleOfTyping = true;
 	});
+
+
 	$('.js-operation').on('click', function(){
+		prev = prev + 1; 
 		var symbol = $(this).text();
 		console.log(symbol + " clicked");
 		if(userInMiddleOfTyping){
@@ -47,13 +63,16 @@ $(document).on('ready', function(){
         calcBrain.performOperation(symbol);
 
         
-        var result = calcBrain.result();
+        
         var desc = calcBrain.description;
-         $('.js-display').val(result); 
-          $('.js-desc').val(desc); 
+         $('.js-desc').val(desc); 
+         setDisplayResult();
 
-
-        if(calcBrain.isCompleteCalculation()){
+         //If a full calcution has been made (either user presses equal or a unary calc was called and
+         // there is no pending calculation) then save the calculation 
+         //If there are already 10 calculations saved, pop off the oldest one (index 0) and push the new
+         //one onto the end of the array
+        if(desc !== "" && calcBrain.isCompleteCalculation()){
         	console.log("Attempting to save data");
         	if(savedCalcsArray.length  === 10){
         		savedCalcsArray.shift();
@@ -67,7 +86,15 @@ $(document).on('ready', function(){
         	console.log(savedCalcsArray);
         	prev = savedCalcsArray.length; 
 			window.localStorage.setItem("saved-calculations", savedCalcs);
+			prev = prev - 1; 
         }
+
+        //The past 10 calculations will be saved unless the user presses AC(all clear)
+        if($(this).hasClass("js-allclear")){
+        	savedCalcsArray = [];
+        	window.localStorage.setItem("saved-calculations", "");
+        }
+        
         
 	});
 
@@ -77,10 +104,14 @@ $(document).on('ready', function(){
 				prev = savedCalcsArray.length
 			}
 			prev = prev - 1;
-		 	$('.js-desc').val(savedCalcsArray[prev]); 
+			var pastCalc = savedCalcsArray[prev];
+			calcBrain.redoCalc(pastCalc); 
+		 	$('.js-desc').val(pastCalc); 
+		 	setDisplayResult(); 
 		}else{
 			$('.js-desc').val("No past calculations available");
 		}
+
 	});
 
 
@@ -88,139 +119,3 @@ $(document).on('ready', function(){
 
 
 
-class Pending{
-	constructor(n, s){		
-		this._number = n; 
-		this._symbol = s;
-	}
-	get number(){
-		return this._number;
-	}
-	get symbol(){
-		return this._symbol; 
-	}
-	print(){
-		console.log("Number: " + this._number +
-		 " Symbol: " + this._symbol);
-	}
-}
-
-
-class Calculator{
-	constructor(){
-		var _accumulator = 0.0;
-		var _pending = null; 
-		var _afterEqual = false;
-		this._internalProgram = []; 
-	}
-	result(){
-		return this.accumulator; 
-	}
-	set pending(pending){
-		this._pending = pending; 
-	}
-	get pending(){
-		return this._pending; 
-	}
-	set internalProgram(internalProgram){
-		this._internalProgram = internalProgram; 
-	}
-	get internalProgram(){
-		return this._internalProgram; 
-	}
-	pushToProgram(x){
-		this._internalProgram.push(x);
-	}
-	get description(){
-		var desc = "";
-		this.internalProgram.forEach(function(x){
-			desc += x;
-		});
-		return desc;
-	}
-	printPending(){
-		this.pending.print();
-	}
-	setOperand(number){
-		this.accumulator = number;
-		
-		this.pushToProgram(number);
-	}
-	executeUnaryOperation(symbol){
-
-        switch(symbol){
-        	case "√":
-        		this.accumulator = new Decimal(String(this.accumulator)).pow(".5");
-        		break;
-        	case "x²":
-        		this.accumulator = new Decimal(String(this.accumulator)).pow(2);
-        		break;
-        	default:
-        		break;
-
-        }
-
-	}
-	executePendingBinaryOperation(){
-		 if(this.pending){
-		 	var symbol = this.pending.symbol; 
-            switch(symbol){
-            	case "+": 
-            			this.accumulator = Number(this.pending.number) + Number(this.accumulator);
-            	 		break;
-            	case "-":
-            			this.accumulator = Number(this.pending.number) - Number(this.accumulator);
-            			break;
-            	case "×":
-            			this.accumulator = Number(this.pending.number) * Number(this.accumulator);
-            			break;
-            	case "÷":
-            			this.accumulator = Number(this.pending.number) / Number(this.accumulator);
-            			break;
-            	 case "xⁿ":
-            			this.accumulator = Math.pow(Number(this.pending.number),Number(this.accumulator));
-            			break;
-            	default: 
-            			console.log("here");
-            			break;
-            }
-            this.pending = null;
-            
-        }
-	}
-	performOperation(symbol){
-		switch(symbol){
-			case "+": 	
-			case "-":
-			case "×":
-			case "÷":
-			case "xⁿ":
-					this.executePendingBinaryOperation();
-                    this.pending = new Pending( (this.accumulator),(symbol));
-                    this.afterEqual = false;
-                    console.log(this.internalProgram);
-                    this.pushToProgram(symbol);
-					break;
-			case "√":
-			case "x²":
-				 	this.executeUnaryOperation(symbol);
-				 	this.afterEqual = true;
-				 	this.pushToProgram(symbol);
-				 	break; 
-			case "=":				
-					this.executePendingBinaryOperation();
-					this.afterEqual = true;
-
-					break;
-			default: console.log("other");
-		}
-	
-	}
-	isCompleteCalculation(){
-		var isComplete = this.afterEqual && this.pending === null;  
-		if(isComplete){
-			this.internalProgram = [];
-		}
-		return isComplete;
-	}
-}

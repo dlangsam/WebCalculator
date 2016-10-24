@@ -1,11 +1,16 @@
 .container{
+	position: relative;
+	top: 20px;
 	background-color: #035bd3;
-	width: 300px;
+	width: 370px;
+	border-radius: 5px;
 
 }
 .content{
 	background-color: #86d9b6;
-	padding: 20px;
+	padding: 20px 20px 20px 25px;
+	
+
 }
 
 .btn{
@@ -19,12 +24,18 @@
     color: white; 
 }
 
-.btn:hover {
-	background-color: #4d62d4;
-	 color: white
+.big-btn{
+	width: 115px;
 }
 
-.btn:active.btn:hover {
+.btn:hover, .btn:focus.btn:hover{
+	background-color: #4d62d4;
+	 color: white;
+	 outline:none;
+}
+
+
+.btn:active {
   background-color: #4d62d4;
   box-shadow: 0 5px #666;
   transform: translateY(4px);
@@ -41,13 +52,15 @@
 
 
 .form-control{
-	width: 250px;
+	width: 320px;
 	border: none;
  	border-radius: 5px;
     /*box-shadow: 0 9px #999;*/
     margin-top: 5px;
     color: #035bd3;
+
 }
 input{
 	text-align: right;
+
 }

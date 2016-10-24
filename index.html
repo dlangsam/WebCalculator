@@ -11,8 +11,9 @@
 <script src="https://rawgithub.com/MikeMcl/big.js/master/big.min.js"></script>
 <script src="https://rawgithub.com/MikeMcl/decimal.js/master/decimal.min.js"></script>
   <script src="app.js"></script>
-
-
+  <script src="brain.js"></script>
+  <script src="pending.js"></script>
+ <script src="tempCalculation.js"></script>
 <title>Calculator</title>
 </head>
 
@@ -26,35 +27,41 @@
 	<input type="text" class="form-control js-display" value="0" readonly>
 	</div>
 	<div class = "row">
+		<button type="button" class="btn btn-default js-operation">C</button>
+  		<button type="button" class="btn btn-default js-operation js-allclear">AC</button>
   		<button type="button" class="btn btn-default js-previous">prev</button>
-  		<button type="button" class="btn btn-default js-operation">x²</button>
-  		<button type="button" class="btn btn-default js-operation">xⁿ</button>
-  		<button type="button" class="btn btn-default js-operation">&#8730;</button>
+  		<button type="button" class="btn btn-default js-operation">&#8723;</button>
+  		
+  		<button type="button" class="btn btn-default js-operation">+</button>
 	</div>
-	<div class = "row">
+	<div class = "row">		
+			<button type="button" class="btn btn-default js-operation">xⁿ</button>
   			<button type="button" class="btn btn-default js-digit">7</button>
   			<button type="button" class="btn btn-default js-digit">8</button>
   			<button type="button" class="btn btn-default js-digit">9</button>
-  			<button type="button" class="btn btn-default js-operation">+</button>
+  			<button type="button" class="btn btn-default js-operation">-</button>
 	</div>
-	<div class = "row">	
+	<div class = "row">		
+			<button type="button" class="btn btn-default js-operation">x²</button>
   			<button type="button" class="btn btn-default js-digit">4</button>
   			<button type="button" class="btn btn-default js-digit">5</button>
   			<button type="button" class="btn btn-default js-digit">6</button>
-  			<button type="button" class="btn btn-default js-operation">-</button>
+  			<button type="button" class="btn btn-default js-operation">&#215;</button>
 	</div>
 	<div class = "row">
+			<button type="button" class="btn btn-default js-operation">x⁻¹</button>
   			<button type="button" class="btn btn-default js-digit">3</button>
   			<button type="button" class="btn btn-default js-digit">2</button>
   			<button type="button" class="btn btn-default js-digit">1</button>
-  			<button type="button" class="btn btn-default js-operation">&#215;</button>
+  			<button type="button" class="btn btn-default js-operation">&#247;</button>
 
 	</div>
 		<div class = "row">	
+			<button type="button" class="btn btn-default js-operation">&#8730;</button>
+  			
+  			<button type="button" class="big-btn btn btn-default js-digit">0</button>
   			<button type="button" class="btn btn-default js-digit">.</button>
-  			<button type="button" class="btn btn-default js-digit">0</button>
   			<button type="button" class="btn btn-default js-operation">=</button>
-  			<button type="button" class="btn btn-default js-operation">&#247;</button>
 	</div>
 	</div>
 	</div>
