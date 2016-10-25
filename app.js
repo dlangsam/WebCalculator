@@ -24,13 +24,10 @@ $(document).on('ready', function(){
 	function setDisplayResult(){
 		var result = calcBrain.result();
 
-
-
         //Once I get the result I am rounding to 10 digits and then calling toFixed 
         // to truncating at the 10th digit. I then round again so that any extra zeros 
         // that may have been added by the toFixed method are removed.
-        var resultDisplayed = new BigNumber(result).round(digits);
-        resultDisplayed = new BigNumber(resultDisplayed).toFixed(digits);
+        var resultDisplayed = new BigNumber(result).toFixed(digits);
         resultDisplayed = new BigNumber(resultDisplayed).round(digits);
          $('.js-display').val(resultDisplayed); 
 	}
