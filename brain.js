@@ -197,6 +197,7 @@ class Calculator{
 			calcBrain.accumulator = inputNumber;
 			this.executePendingBinaryOperation();
 		}
+		this.executePendingBinaryOperation();
 		this.internalProgram = []; //wipe out the internal program that was being made during calculation
 		this.afterEqual = true; 
 
